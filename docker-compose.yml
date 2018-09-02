@@ -1,0 +1,17 @@
+version: '3'
+services:
+  bank-service:
+    image: "account-bank:interview"
+    ports:
+     - "8080:8080"
+    depends_on:
+     - postrges-service
+  postrges-service:
+    image: "postgres"
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: "account-password"
+      POSTGRES_USER: "account-user"
+      POSTGRES_DB: "db_accounts"

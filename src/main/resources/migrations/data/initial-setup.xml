@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+    <changeSet id="Create OPERATIONS table" author="ginger">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="operations"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="operations">
+            <column name="account_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount" type="int8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="varchar(15)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="Create ACCOUNTS table" author="ginger">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="accounts"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="accounts">
+            <column name="id" type="int">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount" type="int8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="operation_count" type="int8">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="Insert new Account" author="ginger">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM accounts WHERE ID = 1;
+            </sqlCheck>
+        </preConditions>
+
+        <sql>
+            INSERT INTO accounts (id, name, amount, operation_count) VALUES(1, 'THE ACCOUNT', 0, 0);
+        </sql>
+        <rollback>
+            DELETE FROM ACCOUNTS WHERE ID = 1;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="Create index account_id for OPERATIONS" author="ginger">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists indexName="operations_acc_id_index"/>
+            </not>
+        </preConditions>
+
+        <createIndex tableName="operations" indexName="operations_acc_id_index">
+            <column name="account_id"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>
